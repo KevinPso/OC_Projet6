@@ -1,8 +1,8 @@
-
 const express = require('express');
-const Book = require('./models/Book');
+const booksRoutes = require('./routes/router.js');
+const userRoutes = require('./routes/userRoutes.js');
 
-// Mongoose
+// MongoDB
 const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://kevinpso:L4n9I1SEpbOOqu4J@cluster0.sivww.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
     { useNewUrlParser: true,
@@ -13,6 +13,8 @@ mongoose.connect('mongodb+srv://kevinpso:L4n9I1SEpbOOqu4J@cluster0.sivww.mongodb
 // Express
 const app = express();
 app.use(express.json());
+
+// CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -20,45 +22,8 @@ app.use((req, res, next) => {
     next();
   });
 
-
-///// CRUD /////
-// Create
-app.post('/api/books', (req, res, next) => {
-    delete req.body._id;
-    const book = new Book({
-      ...req.body
-    });
-    book.save()
-      .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
-      .catch(error => res.status(400).json({ error }));
-});
-
-// Read
-app.get('/api/books/:id', (req, res, next) => {
-    Book.findOne({_id: req.params.id })
-    .then(book => res.status(200).json(book))
-    .catch(error => res.status(404).json({ error }));
-  });
-
-app.get('/api/books', (req, res, next) => {
-    Book.find()
-      .then(books => res.status(200).json(books))
-      .catch(error => res.status(400).json({ error }));
-  });
-
-// Update
-app.put('/api/books/:id', (req, res, next) => {
-    Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Livre modifié !'}))
-      .catch(error => res.status(400).json({ error }));
-  });
-
-//   Delete
-app.delete('/api/books/:id', (req, res, next) => {
-    Book.deleteOne({ _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Livre supprimé !'}))
-      .catch(error => res.status(400).json({ error }));
-  });
-
+// Routes
+app.use('/api/books', booksRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;

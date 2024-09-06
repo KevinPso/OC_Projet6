@@ -34,20 +34,20 @@ export async function getAuthenticatedUser() {
   }
 }
 
-export async function getBooks() {
+export const getBooks = async () => {
   try {
-    const response = await axios({
-      method: 'GET',
-      url: `${API_ROUTES.BOOKS}`,
+    const token = localStorage.getItem('token'); // Récupère le token depuis le stockage local
+    const response = await axios.get('http://localhost:4000/api/books', {
+      headers: {
+        Authorization: `Bearer ${token}`, // Ajoute le token dans les en-têtes
+      },
     });
-    // eslint-disable-next-line array-callback-return
-    const books = formatBooks(response.data);
-    return books;
-  } catch (err) {
-    console.error(err);
-    return [];
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-}
+};
 
 export async function getBook(id) {
   try {

@@ -34,20 +34,26 @@ export async function getAuthenticatedUser() {
   }
 }
 
-export const getBooks = async () => {
+export async function getBooks() {
   try {
-    const token = localStorage.getItem('token'); // Récupère le token depuis le stockage local
-    const response = await axios.get('http://localhost:4000/api/books', {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token available');
+    }
+    const response = await axios({
+      method: 'GET',
+      url: `${API_ROUTES.BOOKS}`,
       headers: {
-        Authorization: `Bearer ${token}`, // Ajoute le token dans les en-têtes
+        Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+    const books = formatBooks(response.data);
+    return books;
+  } catch (err) {
+    console.error('Error fetching books:', err);
+    return [];
   }
-};
+}
 
 export async function getBook(id) {
   try {

@@ -57,9 +57,16 @@ export async function getBooks() {
 
 export async function getBook(id) {
   try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token available');
+    }
     const response = await axios({
       method: 'GET',
       url: `${API_ROUTES.BOOKS}/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     const book = response.data;
     // eslint-disable-next-line no-underscore-dangle

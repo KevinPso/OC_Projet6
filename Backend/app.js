@@ -1,5 +1,5 @@
 const express = require('express');
-const booksRoutes = require('./routes/router.js');
+const bookRoutes = require('./routes/bookRoutes.js');
 const userRoutes = require('./routes/userRoutes.js');
 const path = require('path');
 
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   });
 
 // Routes
-app.use('/api/books', booksRoutes);
+app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

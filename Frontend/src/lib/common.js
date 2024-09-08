@@ -36,37 +36,24 @@ export async function getAuthenticatedUser() {
 
 export async function getBooks() {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No token available');
-    }
     const response = await axios({
       method: 'GET',
       url: `${API_ROUTES.BOOKS}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
+    // eslint-disable-next-line array-callback-return
     const books = formatBooks(response.data);
     return books;
   } catch (err) {
-    console.error('Error fetching books:', err);
+    console.error(err);
     return [];
   }
 }
 
 export async function getBook(id) {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No token available');
-    }
     const response = await axios({
       method: 'GET',
       url: `${API_ROUTES.BOOKS}/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
     const book = response.data;
     // eslint-disable-next-line no-underscore-dangle

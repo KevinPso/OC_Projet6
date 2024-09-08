@@ -1,6 +1,7 @@
 // Controller pour stocker la logique metier
 const Book = require('../models/Book');
 const fs = require('fs');
+const average = require('./average');
 
 ///// CRUD /////
 // Create
@@ -68,7 +69,7 @@ exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
         .then(book => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message : 'Nin-autorise'})
+                res.status(401).json({ message : 'Non-autorise'})
             } else {
                 const filename = book.imageUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, () => {
@@ -84,4 +85,36 @@ exports.deleteBook = (req, res, next) => {
     // Book.deleteOne({ _id: req.params.id })
     //   .then(() => res.status(200).json({ message: 'Livre supprimé !'}))
     //   .catch(error => res.status(400).json({ error }));
+};
+
+
+// Gestion de la notation des livres
+
+// Création d'une note
+exports.createRating = (req, res, next) => {
+    const ratingBook = { ...req.body, grade: req.body.rating };
+    delete ratingBook._id;
+    Book.findOne({ _id: req.params.id })
+        .then(book => {
+            const newRatings = book.ratings;
+            const userIdArray = newRatings.map(rating => rating.userId);
+            if (userIdArray.includes(req.auth.userId)) {
+                return res.status(403).json({ message: 'Non autorisé !' });
+            }
+            newRatings.push(ratingBook);
+            const grades = newRatings.map(rating => rating.grade);
+            const averageGrades = average.average(grades);
+            book.averageRating = averageGrades;
+            Book.updateOne({ _id: req.params.id }, { ratings: newRatings, averageRating: averageGrades })
+                .then(() => res.status(200).json(book))
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch(error => res.status(404).json({ error }));
+};
+
+// Recuperation et tri des livres les mieux notes
+exports.getBestBooks = (req, res, next) => {
+    Book.find().sort({ averageRating: -1 }).limit(3)
+        .then(books => res.status(200).json(books))
+        .catch(error => res.status(404).json({ error }));
 };

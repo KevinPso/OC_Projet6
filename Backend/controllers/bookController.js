@@ -1,7 +1,7 @@
 // Controller pour stocker la logique metier
 const Book = require('../models/Book');
 const fs = require('fs');
-const average = require('./average');
+const average = require('./averageCalc.js');
 
 ///// CRUD /////
 // Create
@@ -47,7 +47,6 @@ exports.modifyBook = (req, res, next) => {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
-
     delete bookObject._userId;
     Book.findOne({_id: req.params.id})
         .then((book) => {

@@ -1,4 +1,3 @@
-// npm install --save bcrypt
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -27,6 +26,7 @@ exports.login = (req, res, next) => {
         if (!user) {
             return res.status(401).json({message: 'Paire identifiant/mot de passe incorrecte !'});
         } else {
+            // Comparaison du mot de passe avec le hash de la base de données
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                 if (!valid) {

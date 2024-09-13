@@ -14,19 +14,11 @@ exports.createBook = (req, res, next) => {
         userId: req.auth.userId,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-
+    // Enregistrement dans la base de données
     book.save()
-        .then(() => res.status(201).json({ message: 'Livre enregistré !'})) // Réponse en cas de succès
-        .catch(error => res.status(400).json({ error })); // Réponse en cas d'erreur
+        .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
+        .catch(error => res.status(400).json({ error }));
 };
-
-    // delete req.body._id;
-    // const book = new Book({
-    //   ...req.body
-    // });
-    // book.save()
-    //   .then(() => res.status(201).json({ message: 'Livre enregistré !'}))
-    //   .catch(error => res.status(400).json({ error }));
 
 // Read
 exports.getAllBooks = (req, res, next) => {
@@ -58,9 +50,6 @@ exports.modifyBook = (req, res, next) => {
                 .catch (error => res.status(401).json({ error }));
             }
         })
-    // Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-    //   .then(() => res.status(200).json({ message: 'Livre modifié !'}))
-    //   .catch(error => res.status(400).json({ error }));
 };
 
 // Delete
@@ -81,9 +70,6 @@ exports.deleteBook = (req, res, next) => {
         .catch(error => {
             res.status(500).json({ error });
         })
-    // Book.deleteOne({ _id: req.params.id })
-    //   .then(() => res.status(200).json({ message: 'Livre supprimé !'}))
-    //   .catch(error => res.status(400).json({ error }));
 };
 
 
@@ -111,7 +97,7 @@ exports.createRating = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 };
 
-// Recuperation et tri des livres les mieux notes
+// Recuperation et tri des 3 livres les mieux notes
 exports.getBestBooks = (req, res, next) => {
     Book.find().sort({ averageRating: -1 }).limit(3)
         .then(books => res.status(200).json(books))
